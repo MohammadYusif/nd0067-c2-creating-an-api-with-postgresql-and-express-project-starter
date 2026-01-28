@@ -1,54 +1,180 @@
-# Storefront Backend Project
+# Storefront Backend API
+
+A RESTful API for a storefront application built with Node.js, Express, TypeScript, and PostgreSQL.
+
+## Technologies Used
+
+- **PostgreSQL** - Database
+- **Node.js** - Runtime environment
+- **Express** - Web framework
+- **TypeScript** - Programming language
+- **dotenv** - Environment variable management
+- **db-migrate** - Database migrations
+- **jsonwebtoken** - JWT authentication
+- **bcrypt** - Password hashing
+- **Jasmine** - Testing framework
+- **Supertest** - HTTP testing
 
 ## Getting Started
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
+### Prerequisites
 
-## Required Technologies
-Your application must make use of the following libraries:
-- Postgres for the database
-- Node/Express for the application logic
-- dotenv from npm for managing environment variables
-- db-migrate from npm for migrations
-- jsonwebtoken from npm for working with JWTs
-- jasmine from npm for testing
+- Node.js (v12 or higher)
+- PostgreSQL (v12 or higher)
+- npm or yarn
 
-## Steps to Completion
+### Installation
 
-### 1. Plan to Meet Requirements
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd nd0067-c2-creating-an-api-with-postgresql-and-express-project-starter
+```
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
+2. Install dependencies
+```bash
+npm install
+```
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+### Database Setup
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+1. Start PostgreSQL service using Docker
+```bash
+docker-compose up -d
+```
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
+Alternatively, if you have PostgreSQL installed locally, ensure it's running.
 
-### 2.  DB Creation and Migrations
+2. Create the databases
+```bash
+# Connect to PostgreSQL
+psql -U postgres
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+# Create databases
+CREATE DATABASE storefront_dev;
+CREATE DATABASE storefront_test;
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
+# Exit psql
+\q
+```
 
-### 3. Models
+3. Configure environment variables
 
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
+The `.env` file should contain:
+```env
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+POSTGRES_DB=storefront_dev
+POSTGRES_TEST_DB=storefront_test
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+BCRYPT_PASSWORD=my-secret-pepper-2024
+SALT_ROUNDS=10
+TOKEN_SECRET=my-super-secret-jwt-token-2024
+ENV=dev
+```
 
-### 4. Express Handlers
+**Note:** For submission purposes, the `.env` file is included, but in production, this file should be in `.gitignore` and never committed.
 
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
+4. Run database migrations
+```bash
+npm run migrate:up
+```
 
-### 5. JWTs
+To reset the database:
+```bash
+npm run migrate:reset
+```
 
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
+### Running the Application
 
-### 6. QA and `README.md`
+#### Development Mode (with auto-reload)
+```bash
+npm run watch
+```
 
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
+#### Production Mode
+```bash
+npm run tsc
+npm start
+```
 
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!
+The server will start on `http://localhost:3000`
+
+### Running Tests
+
+```bash
+npm test
+```
+
+This will:
+1. Set the environment to test mode
+2. Run migrations on the test database
+3. Execute all Jasmine test suites
+4. Reset the test database
+
+## Ports
+
+- **Backend API**: Port 3000
+- **PostgreSQL Database**: Port 5432
+
+## Project Structure
+
+```
+src/
+├── database.ts           # Database connection
+├── server.ts            # Express app configuration
+├── models/              # Database models
+│   ├── user.ts
+│   ├── product.ts
+│   └── order.ts
+├── handlers/            # Route handlers
+│   ├── users.ts
+│   ├── products.ts
+│   └── orders.ts
+├── middleware/          # Custom middleware
+│   └── auth.ts
+└── tests/              # Test suites
+    ├── userSpec.ts
+    ├── productSpec.ts
+    ├── orderSpec.ts
+    ├── userEndpointSpec.ts
+    ├── productEndpointSpec.ts
+    └── orderEndpointSpec.ts
+```
+
+## Available Scripts
+
+- `npm run watch` - Start development server with auto-reload
+- `npm run tsc` - Compile TypeScript to JavaScript
+- `npm start` - Start production server
+- `npm test` - Run test suite
+- `npm run migrate:up` - Run database migrations
+- `npm run migrate:down` - Rollback last migration
+- `npm run migrate:reset` - Reset all migrations
+
+## API Endpoints
+
+See [REQUIREMENTS.md](REQUIREMENTS.md) for detailed API documentation including:
+- All available endpoints
+- HTTP methods
+- Request/response formats
+- Authentication requirements
+- Database schema
+
+## Authentication
+
+This API uses JWT (JSON Web Tokens) for authentication. To access protected routes:
+
+1. Create a user or authenticate via `/users` or `/users/authenticate`
+2. Use the returned token in the Authorization header:
+```
+Authorization: Bearer <your-token>
+```
+
+## Security Features
+
+- Password hashing with bcrypt and salt
+- JWT-based authentication
+- Environment variables for sensitive data
+- Protected routes with authentication middleware
