@@ -8,7 +8,7 @@ dist/
 !verify-db.js
 
 # Environment variables
-# .env (included for Udacity project submission)
+.env
 
 # Logs
 *.log

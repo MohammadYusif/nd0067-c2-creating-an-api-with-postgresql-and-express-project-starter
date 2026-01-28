@@ -1,6 +1,7 @@
-import express, { Request, Response } from 'express';
-import { Product, ProductStore } from '../models/product';
-import { verifyAuthToken } from '../middleware/auth';
+import express, { Request, Response } from "express";
+import { Product, ProductStore } from "../models/product";
+import { verifyAuthToken } from "../middleware/auth";
+import app from "../server";
 
 const store = new ProductStore();
 
@@ -27,12 +28,12 @@ const create = async (req: Request, res: Response): Promise<void> => {
     const product: Product = {
       name: req.body.name,
       price: parseFloat(req.body.price),
-      category: req.body.category
+      category: req.body.category,
     };
 
     if (!product.name || !product.price) {
       res.status(400).json({
-        error: 'Missing required fields: name, price'
+        error: "Missing required fields: name, price",
       });
       return;
     }
@@ -54,11 +55,29 @@ const getByCategory = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const update = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    const product: Product = {
+      name: req.body.name,
+      price: req.body.price,
+      category: req.body.category,
+    };
+    const updated = await store.update(id, product);
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
+
+// In productRoutes:
+app.put("/products/:id", verifyAuthToken, update);
+
 const productRoutes = (app: express.Application): void => {
-  app.get('/products', index);
-  app.get('/products/:id', show);
-  app.post('/products', verifyAuthToken, create);
-  app.get('/products/category/:category', getByCategory);
+  app.get("/products", index);
+  app.get("/products/:id", show);
+  app.post("/products", verifyAuthToken, create);
+  app.get("/products/category/:category", getByCategory);
 };
 
 export default productRoutes;

@@ -26,12 +26,14 @@ A RESTful API for a storefront application built with Node.js, Express, TypeScri
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone <repository-url>
 cd nd0067-c2-creating-an-api-with-postgresql-and-express-project-starter
 ```
 
 2. Install dependencies
+
 ```bash
 npm install
 ```
@@ -39,6 +41,7 @@ npm install
 ### Database Setup
 
 1. Start PostgreSQL service using Docker
+
 ```bash
 docker-compose up -d
 ```
@@ -46,6 +49,7 @@ docker-compose up -d
 Alternatively, if you have PostgreSQL installed locally, ensure it's running.
 
 2. Create the databases
+
 ```bash
 # Connect to PostgreSQL
 psql -U postgres
@@ -61,9 +65,10 @@ CREATE DATABASE storefront_test;
 3. Configure environment variables
 
 The `.env` file should contain:
+
 ```env
 POSTGRES_HOST=127.0.0.1
-POSTGRES_PORT=5432
+POSTGRES_PORT=5433
 POSTGRES_DB=storefront_dev
 POSTGRES_TEST_DB=storefront_test
 POSTGRES_USER=postgres
@@ -77,11 +82,13 @@ ENV=dev
 **Note:** For submission purposes, the `.env` file is included, but in production, this file should be in `.gitignore` and never committed.
 
 4. Run database migrations
+
 ```bash
 npm run migrate:up
 ```
 
 To reset the database:
+
 ```bash
 npm run migrate:reset
 ```
@@ -89,11 +96,13 @@ npm run migrate:reset
 ### Running the Application
 
 #### Development Mode (with auto-reload)
+
 ```bash
 npm run watch
 ```
 
 #### Production Mode
+
 ```bash
 npm run tsc
 npm start
@@ -108,6 +117,7 @@ npm test
 ```
 
 This will:
+
 1. Set the environment to test mode
 2. Run migrations on the test database
 3. Execute all Jasmine test suites
@@ -156,6 +166,7 @@ src/
 ## API Endpoints
 
 See [REQUIREMENTS.md](REQUIREMENTS.md) for detailed API documentation including:
+
 - All available endpoints
 - HTTP methods
 - Request/response formats
@@ -168,6 +179,7 @@ This API uses JWT (JSON Web Tokens) for authentication. To access protected rout
 
 1. Create a user or authenticate via `/users` or `/users/authenticate`
 2. Use the returned token in the Authorization header:
+
 ```
 Authorization: Bearer <your-token>
 ```
